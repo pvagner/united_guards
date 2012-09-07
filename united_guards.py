@@ -121,8 +121,8 @@ class game:
 		self.pressed = True
 		if input == self.rand and time.time() < self.previous + self.delay:
 			self.score += 100 * round ((time.time () - self.previous), 3)
-			missile[input].play ()			
-			time.sleep (0.25)
+			missile[input].play()			
+			pygame.time.delay(250)
 			mgchan.play(planehit)
 			mgchan.set_volume(self.left, self.right)
 			chan.fadeout (200)
@@ -132,7 +132,7 @@ class game:
 			self.target_falling = False
 		else:
 			missile[input].play ()
-			time.sleep (missile[input].get_length())
+			pygame.time.delay(int(missile[input].get_length()*1000))
 			self.die()
 			self.lives -= 1
 			self.previous = time.time()
@@ -143,14 +143,14 @@ class game:
 		rand = random.randrange (0, mgcount)
 		mgchan.play (mg[rand])
 		mgchan.set_volume (self.left, self.right)
-		for i in range (0, 3):
+		for i in range (3):
 			randvar = random.randrange (0, ricochetcount)
 			ricochet[randvar].play()
-			time.sleep (0.100)
-		for i in range (0, 2):
+			pygame.time.delay(100)
+		for i in range (2):
 			randvar = random.randrange (0, bhitcount)
 			bhit[randvar].play()
-			time.sleep (0.100)
+			pygame.time.delay(100)
 		randvar = random.randrange (0, deadcount)
 		dead[randvar].play()
 
@@ -181,7 +181,7 @@ class game:
 	def loop(self):
 		"""main game loop."""
 		while self.running == True:
-			time.sleep (0.001)
+			pygame.time.delay(1)
 			event = pygame.event.poll ()
 			if event.type == pygame.KEYDOWN:
 				if event.key == pygame.K_ESCAPE:
@@ -218,7 +218,7 @@ class game:
 			if self.game_active == True:
 				#print "game part"
 				if self.lives <= 0:
-					time.sleep(1)
+					pygame.time.delay(1000)
 					s.say (_("Game Over. Your final score is {0}.").format(self.score), 1)
 					self.current_menu = main_menu.init ()
 					self.game_active = False
