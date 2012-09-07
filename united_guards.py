@@ -42,34 +42,6 @@ s =speech.Speaker(language=lang)
 menu.s = s
 #menu._ = gettext.gettext
 
-#initialisation of sounds
-plane = []
-planecount = 8
-for i in range(1, planecount + 1):
-	plane.append (pygame.mixer.Sound(os.path.normpath("sounds/plane"+str(i)+".ogg")))
-mg = []
-mgcount = 9
-for i in range(1,mgcount + 1):
-	mg.append (pygame.mixer.Sound(os.path.normpath("sounds/mg"+str(i)+".ogg")))
-aim = pygame.mixer.Sound(os.path.normpath("sounds/aim.ogg"))
-missile = []
-for i in range (0, 3):
-	missile.append (pygame.mixer.Sound(os.path.normpath("sounds/missile"+str(i)+".ogg")))
-planehit = pygame.mixer.Sound (os.path.normpath("sounds/planehit.ogg"))
-dead = []
-deadcount = 3
-for i in range (1, deadcount +1):
-	dead.append (pygame.mixer.Sound(os.path.normpath("sounds/dead"+str(i)+".ogg")))
-bhit = []
-bhitcount = 4
-for i in range (1, bhitcount +1):
-	bhit.append (pygame.mixer.Sound(os.path.normpath("sounds/bhit"+str(i)+".ogg")))
-ricochet = []
-ricochetcount =8
-for i in range (1, ricochetcount +1):
-	ricochet.append (pygame.mixer.Sound(os.path.normpath("sounds/ricoch"+str(i)+".ogg")))
-
-
 #define menus
 #define main menu
 start = menu.menuitem(_("Start the game"), "__main__.g.startgame(5, 3)")
@@ -104,6 +76,7 @@ class game:
 		self.game_active = None #indicates if we are in actual game
 		self.running = True #indicates if main loop is running
 		self.current_menu = None
+		self.initSounds()
 
 	def position(self):
 		"""sets random positionn of falling sound."""
@@ -119,8 +92,8 @@ class game:
 		elif self.rand == 2:
 			self.left = 0.1
 			self.right = 1
-		self.planenum = random.randrange (0, planecount)
-		self.cutplane = self.soundcut(plane[self.planenum], self.orig_delay - self.delay)
+		self.planenum = random.randrange (0, self.planeCount)
+		self.cutplane = self.soundcut(self.planeSounds[self.planenum], self.orig_delay - self.delay)
 		chan.play(self.cutplane)
 		chan.set_volume(self.left, self.right)
 
@@ -129,9 +102,9 @@ class game:
 		self.pressed = True
 		if input == self.rand and time.time() < self.previous + self.delay:
 			self.score += 100 * round ((time.time () - self.previous), 3)
-			missile[input].play()			
+			self.missileSounds[input].play()			
 			pygame.time.delay(250)
-			mgchan.play(planehit)
+			mgchan.play(self.planehitSounds[0])
 			mgchan.set_volume(self.left, self.right)
 			chan.fadeout (200)
 			self.rand=None
@@ -139,8 +112,8 @@ class game:
 			self.previous = time.time() + self.delay * 1.2
 			self.target_falling = False
 		else:
-			missile[input].play ()
-			pygame.time.delay(int(missile[input].get_length()*1000))
+			self.missileSounds[input].play ()
+			pygame.time.delay(int(self.missileSounds[input].get_length()*1000))
 			self.die()
 			self.lives -= 1
 			self.previous = time.time()
@@ -148,19 +121,19 @@ class game:
 			self.previous = time.time() + self.cutplane.get_length() - (time.time() - self.previous)
 
 	def die(self):
-		rand = random.randrange (0, mgcount)
-		mgchan.play (mg[rand])
+		rand = random.randrange (0, self.mgCount)
+		mgchan.play (self.mgSounds[rand])
 		mgchan.set_volume (self.left, self.right)
 		for i in range (3):
-			randvar = random.randrange (0, ricochetcount)
-			ricochet[randvar].play()
+			randvar = random.randrange (0, self.ricochetCount)
+			self.ricochetSounds[randvar].play()
 			pygame.time.delay(100)
 		for i in range (2):
-			randvar = random.randrange (0, bhitcount)
-			bhit[randvar].play()
+			randvar = random.randrange (0, self.bhitCount)
+			self.bhitSounds[randvar].play()
 			pygame.time.delay(100)
-		randvar = random.randrange (0, deadcount)
-		dead[randvar].play()
+		randvar = random.randrange (0, self.deadCount)
+		self.deadSounds[randvar].play()
 
 	def soundcut (self, sound, time_to_cut):
 		"""Accepts pygame sound object and cuts time_to_cut from its beginning, using numpy array slicing. Returns pygame sound object."""
@@ -231,9 +204,9 @@ class game:
 					self.current_menu = main_menu.init ()
 					self.game_active = False
 					self.menu_active = True
-				if (time.time() >= self.previous + self.delay - aim.get_length()) and self.target_falling == True:
+				if (time.time() >= self.previous + self.delay - self.aimSounds[0].get_length()) and self.target_falling == True:
 #					print "aiming"
-					mgchan.play (aim)
+					mgchan.play (self.aimSounds[0])
 #					mgchan.set_volume (self.left, self.right)
 				if (time.time() >= self.previous + self.delay) and self.target_falling == True:
 					self.pressed = True
@@ -270,6 +243,57 @@ class game:
 		s.quit ()
 		pygame.quit ()
 		sys.exit ()
+
+	def initSounds(self):
+		self.planehitSounds = [
+			pygame.mixer.Sound (os.path.normpath("sounds/planehit.ogg"))
+		]
+		self.aimSounds =[
+			pygame.mixer.Sound(os.path.normpath("sounds/aim.ogg"))
+		]
+		staticSounds =[
+			"planehit.ogg",
+			"aim.ogg"
+		]
+		self.planeSounds=[]
+		self.mgSounds=[]
+		self.missileSounds=[]
+		self.deadSounds=[]
+		self.bhitSounds=[]
+		self.ricochetSounds=[]
+		dir="sounds"
+		for fileName in os.listdir(dir):
+			if not os.path.isfile(os.path.normpath("%s/%s"%(dir,fileName))) and not fileName.endswith(".ogg") or fileName in staticSounds:
+				continue
+			if fileName.startswith("plane"):
+				self.planeSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+			if fileName.startswith("mg"):
+				self.mgSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+			if fileName.startswith("aim"):
+				self.aimSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+			if fileName.startswith("missile"):
+				self.missileSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+			if fileName.startswith("dead"):
+				self.deadSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+			if fileName.startswith("bhit"):
+				self.bhitSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+			if fileName.startswith("ricoch"):
+				self.ricochetSounds.append(pygame.mixer.Sound(os.path.normpath("%s/%s"%(dir,fileName))))
+				continue
+		self.planeCount=len(self.planeSounds)
+		self.mgCount=len(self.mgSounds)
+		self.missileCount=len(self.missileSounds)
+		self.deadCount=len(self.deadSounds)
+		self.bhitCount=len(self.bhitSounds)
+		self.ricochetCount=len(self.ricochetSounds)
+		print("ricochet sounds %d"%self.ricochetCount)
+
 
 def readmanual():
 	s.say (_("This is very simple. Listen for incoming planes and press corresponding arrow (Left, Up or Right) to launch a missile in given direction.\nPress L to announce number of remaining lives and S to announce your score.\nPress ESCAPE to pause the game.\nHave fun!"), 1)
