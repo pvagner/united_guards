@@ -21,6 +21,9 @@ If you have downloaded source code, you will need:
 - Speech dispatcher and its Pythonic bindings (Linux only)
 - some SAPI voice installed (Windows only)
 
+To install the required dependencies in ubuntu 12.04 and similar distros run
+sudo apt-get install python-pygame python-numpy python-speechd
+
 About the game
 
 You are guarding borders of your country, watching for enemy airplanes. You have to shoot them down before they can hit you and decorate your post with your remains. Planes get faster and faster.
