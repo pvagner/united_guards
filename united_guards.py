@@ -5,7 +5,15 @@
 #see included README file for more info
 
 #initialisation
-import time, pygame, menu, os.path, random,speech, sys, gettext
+import time
+import pygame
+import os.path
+import random
+import sys
+import gettext
+
+import menu
+import speech
 
 #gettext initialisation
 gettext.bindtextdomain('messages', 'lang')
@@ -17,6 +25,7 @@ pygame.init()
 pygame.display.set_mode((320, 200))
 pygame.display.set_caption ('United guards')
 #pygame.event.set_allowed([pygame.QUIT, pygame.KEYUP, pygame.KEYDOWN])
+
 #initialisation of speech
 s =speech.Speaker()
 s.init()
@@ -24,6 +33,7 @@ s.init()
 #pass needed functions to menu module
 menu.s = s
 #menu._ = gettext.gettext
+
 #initialisation of sounds
 plane = []
 planecount = 8
@@ -52,10 +62,6 @@ for i in range (1, ricochetcount +1):
 	ricochet.append (pygame.mixer.Sound(os.path.normpath("sounds/ricoch"+str(i)+".ogg")))
 
 
-
-
-
-
 #define menus
 #define main menu
 start = menu.menuitem(_("Start the game"), "__main__.g.startgame(5, 3)")
@@ -74,8 +80,8 @@ chan=pygame.mixer.Channel(0)
 mgchan = pygame.mixer.Channel(1)
 
 
-
 class game:
+
 	def __init__(self):
 		self.lives = None
 		self.delay = None  #delay between attacks
@@ -90,12 +96,6 @@ class game:
 		self.game_active = None #indicates if we are in actual game
 		self.running = True #indicates if main loop is running
 		self.current_menu = None
-
-
-
-
-
-
 
 	def position(self):
 		"""sets random positionn of falling sound."""
@@ -163,7 +163,6 @@ class game:
 		result = snd_array [cut_frames:]
 		soundresult = pygame.sndarray.make_sound (result)
 		return soundresult
-
 
 	def startgame(self, lives, delay):
 		"""starts  game and initialises variables."""		
@@ -240,27 +239,24 @@ class game:
 					self.position()
 					self.pressed = False
 
-
-
-
 	def pausegame(self):
 		pygame.mixer.pause()
 		self.remaining = time.time() - (self.previous + self.delay)
 		self.game_active = False
 		self.menu_active = True
 		self.current_menu = abortprompt.init()
-	
+
 	def resumegame(self):
 		self.previous = time.time() + self.remaining
 		pygame.mixer.unpause()
 		self.menu_active = False
 		self.game_active = True
-	
+
 	def abortgame(self):
 		pygame.mixer.stop()
 		self.remaining = None
 		self.current_menu = main_menu.init()
-	
+
 	def quit (self):
 		s.say (_("Exiting now."), 1)
 		s.quit ()
@@ -271,7 +267,6 @@ def readmanual():
 	s.say (_("This is very simple. Listen for incoming planes and press corresponding arrow (Left, Up or Right) to launch a missile in given direction.\nPress L to announce number of remaining lives and S to announce your score.\nPress ESCAPE to pause the game.\nHave fun!"), 1)
 
 
-
 if __name__ == "__main__":
 	s.say(_("Welcome to the game."), 1)
 	g = game()
@@ -279,3 +274,4 @@ if __name__ == "__main__":
 	g.menu_active = True
 	g.game_active = False
 	g.loop()
+

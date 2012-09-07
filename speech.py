@@ -3,10 +3,12 @@
 #simple speech interface for speech dispatcher and windows screenreaders + SAPI
 #released on September 03, 2012 by Vojtěch Polášek <vojtech.polasek@gmail.com>
 #This is helper module for my software
+
 import sys
 
 class Speaker:
 	"""class for speaking"""
+
 	def init (self):
 		if sys.platform.startswith ("linux"):
 			import speechd
@@ -21,6 +23,7 @@ class Speaker:
 			self.s.sapiEnable(1)
 			self.say = self.s.sayStringA
 			self.stop = self.s.stopSpeech
+
 	def spdSpeak(self, text, interrupt):
 		if interrupt == 1:
 			self.s.cancel()
@@ -31,3 +34,4 @@ class Speaker:
 	def quit(self):
 		if self.used == "speechd":
 			self.s.close()
+

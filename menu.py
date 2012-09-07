@@ -8,16 +8,22 @@ import __main__
 items = None
 current = None
 
+
 class menuitem:
+
 	def __init__(self, caption, action):
 		self.caption = caption
 		self.action = action
+
 	def say(self):
 		s.say(self.caption, 1)
+
 	def select(self):
 		exec self.action
 
+
 class menu:
+
 	def __init__(self,title,items,movesound=None,selectsound=None,bgsound=None):
 		self.title = title
 		self.items = items
@@ -25,12 +31,13 @@ class menu:
 		self.selectsound = selectsound
 		self.bgsound = bgsound
 		self.current = None
+
 	def init(self,current=0):
 		self.current = current
 		s.say(self.title, 0)
 		s.say(self.items[self.current].caption, 0)
 		return self
-	
+
 	def movedown(self):
 		if self.current < len (self.items) -1:
 			self.current += 1
@@ -44,5 +51,7 @@ class menu:
 		else:
 			self.current = len (self.items) -1
 		self.items[self.current].say()
+
 	def select(self):
 		self.items[self.current].select()
+
