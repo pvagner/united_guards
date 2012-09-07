@@ -11,6 +11,7 @@ import os.path
 import random
 import sys
 import gettext
+import locale
 
 import menu
 import speech
@@ -27,8 +28,15 @@ pygame.display.set_caption ('United guards')
 #pygame.event.set_allowed([pygame.QUIT, pygame.KEYUP, pygame.KEYDOWN])
 
 #initialisation of speech
-s =speech.Speaker()
-s.init()
+try:
+	lang=locale.getdefaultlocale()[0]
+except AtributeError, IndexError:
+	lang=None
+if lang and (os.path.exists(os.path.normpath("lang/" + lang)) or os.path.exists(os.path.normpath("lang/" + lang.split("_")[0]))):
+	lang=lang.split("_")[0]
+else:
+	lang="en"
+s =speech.Speaker(language=lang)
 
 #pass needed functions to menu module
 menu.s = s

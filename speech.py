@@ -9,13 +9,15 @@ import sys
 class Speaker:
 	"""class for speaking"""
 
-	def init (self):
+	def __init__ (self, language=None):
 		if sys.platform.startswith ("linux"):
 			import speechd
 			self.used = "speechd"
 			self.s = speechd.Speaker("pyspeech", "pyspeech")
 			self.say = self.spdSpeak
 			self.stop = self.s.cancel
+			if language:
+				self.s.set_language(language)
 		elif sys.platform == "win32":
 			import ctypes
 			self.used = "srapi"
